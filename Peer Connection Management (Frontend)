@@ -1,0 +1,34 @@
+// public/main.js (Continued)
+const peerConnections = {};
+
+function createPeerConnection(userId) {
+    const peerConnection = new RTCPeerConnection();
+    
+    // Add local stream to the peer connection
+    const localStream = document.getElementById('localVideo').srcObject;
+    localStream.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, localStream);
+    });
+    
+    // Handle ICE candidate events
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            // Send ICE candidate to the remote peer
+            socket.emit('ice-candidate', event.candidate, userId);
+        }
+    };
+    
+    // Handle remote stream
+    peerConnection.ontrack = (event) => {
+        const remoteVideo = document.createElement('video');
+        remoteVideo.autoplay = true;
+        remoteVideo.srcObject = event.streams[0];
+        
+        // Add remote video to the page
+        const remoteVideos = document.getElementById('remoteVideos');
+        remoteVideos.appendChild(remoteVideo);
+    };
+    
+    peerConnections[userId] = peerConnection;
+    return peerConnection;
+}
