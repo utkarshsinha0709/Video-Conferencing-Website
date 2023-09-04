@@ -1,0 +1,15 @@
+// server.js (Continued)
+io.on('connection', (socket) => {
+    socket.on('join-room', (roomId, userId) => {
+        socket.join(roomId);
+        // Broadcast to other users in the room that a new user has joined
+        socket.to(roomId).emit('user-connected', userId);
+
+        socket.on('disconnect', () => {
+            // Handle user disconnection and notify other users
+            socket.to(roomId).emit('user-disconnected', userId);
+        });
+    });
+
+    // Handle signaling logic (offer/answer) here
+});
