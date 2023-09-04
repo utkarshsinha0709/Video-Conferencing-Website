@@ -1,0 +1,26 @@
+// public/main.js
+const socket = io();
+
+// Get user media (video and audio)
+navigator.mediaDevices
+    .getUserMedia({ video: true, audio: true })
+    .then((stream) => {
+        const localVideo = document.getElementById('localVideo');
+        localVideo.srcObject = stream;
+        
+        // Add local video to the page
+        localVideo.play();
+    })
+    .catch((error) => {
+        console.error('Error accessing camera and microphone:', error);
+    });
+
+// Handle signaling logic (join rooms, offer/answer)
+socket.on('connect', () => {
+    const roomId = 'your-room-id'; // Replace with a dynamic room ID
+    const userId = 'your-user-id'; // Replace with a unique user ID
+    
+    socket.emit('join-room', roomId, userId);
+    
+    // Handle signaling logic (offer/answer) here
+});
